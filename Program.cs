@@ -7,4 +7,5 @@ var method = myType.GetMethod("SaySomething")!;
 // Create instance about type.
 var myTypeInstance = Activator.CreateInstance(myType);
 // Call target method with searched instance.
-method.Invoke(myTypeInstance, new string[] { "Hello world" });
+method.Invoke(myTypeInstance, new object[] { "Hello world", 3 });
+
