@@ -1,7 +1,10 @@
-﻿using System.Reflection;
-using System.Reflection.Emit;
+﻿using DynamicProxyGenerator;
 
-// Define dynamic module
-var assemblyName = new AssemblyName("ExampleDynamicAssembly");
-var dynamicAssembly = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
-var dynamicModule = dynamicAssembly.DefineDynamicModule("ExampleDynamicModule");
+// Generate Type in runtime.
+var myType = MyTypeGenerator.Generate();
+// Search target method from generated type.
+var method = myType.GetMethod("SaySomething")!;
+// Create instance about type.
+var myTypeInstance = Activator.CreateInstance(myType);
+// Call target method with searched instance.
+method.Invoke(myTypeInstance, new string[] { "Hello world" });
