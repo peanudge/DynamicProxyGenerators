@@ -28,6 +28,14 @@ public class MyTypeGenerator
             name: "MyType",
             attr: TypeAttributes.Public | TypeAttributes.Class);
 
+        DefineSaySomehtingMethod(typeBuilder);
+        DefineToStringMethod(typeBuilder);
+
+        return typeBuilder.CreateType()!;
+    }
+
+    static void DefineSaySomehtingMethod(TypeBuilder typeBuilder)
+    {
         // INFO: Define method. "public void SaySomething()"
         var methodBuilder = typeBuilder.DefineMethod("SaySomething", MethodAttributes.Public);
 
@@ -46,7 +54,6 @@ public class MyTypeGenerator
 
         var methodILGenerator = methodBuilder.GetILGenerator();
 
-        #region IL
 
         // 1. Load arguments in what is known as the "Evaluation stack"
         methodILGenerator.Emit(OpCodes.Ldarg_1);
@@ -60,10 +67,30 @@ public class MyTypeGenerator
                 typeof(string), // stack1: arg_1
                 typeof(int)  // stack2: arg_2
             });
+
         methodILGenerator.Emit(OpCodes.Ret);
-
-        #endregion IL
-
-        return typeBuilder.CreateType()!;
     }
+
+    static void DefineToStringMethod(TypeBuilder typeBuilder)
+    {
+        var toStringMethod = typeof(object).GetMethod(nameof(object.ToString))!;
+
+        var newToStringMethod = typeBuilder.DefineMethod(
+            name: nameof(object.ToString),
+            attributes: toStringMethod.Attributes,
+            returnType: typeof(string),
+            parameterTypes: Array.Empty<Type>()
+        );
+
+        var toStringILGenerator = newToStringMethod.GetILGenerator();
+
+        // Pushes a new object reference to a string literal stored in the metadata.
+        toStringILGenerator.Emit(OpCodes.Ldstr, "A message from ToString()");
+        toStringILGenerator.Emit(OpCodes.Ret);
+
+        typeBuilder.DefineMethodOverride(
+            methodInfoBody: newToStringMethod,
+            methodInfoDeclaration: toStringMethod);
+    }
+
 }
