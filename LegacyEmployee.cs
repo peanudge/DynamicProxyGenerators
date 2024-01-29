@@ -11,7 +11,7 @@ public class Employee : INotifyPropertyChanged
             RaisePropertyChanged("FirstName");
         }
     }
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     protected void RaisePropertyChanged(string
       propertyName)
